@@ -2,34 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const DATA = [
-  {
-    staffId: 1,
-    staffName: 'Staff 1',
-    staffImage: require('../components/img/psna.jpg'),
-  },
-  {
-    staffId: 2,
-    staffName: 'Staff 2',
-    staffImage: require('../components/img/psna.jpg'),
-  },
-  {
-    staffId: 3,
-    staffName: 'Staff 3',
-    staffImage: require('../components/img/psna.jpg'),
-  },
-  {
-    staffId: 4,
-    staffName: 'Staff 4',
-    staffImage: require('../components/img/psna.jpg'),
-  },
-  {
-    staffId: 5,
-    staffName: 'Staff 5',
-    staffImage: require('../components/img/psna.jpg'),
-  },
-];
-
 const TaskListScreen = ({ navigation }) => {
   const [tasks, setTasks] = useState([]); // State to store tasks
 

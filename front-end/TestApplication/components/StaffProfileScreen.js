@@ -1,13 +1,5 @@
-/* eslint-disable prettier/prettier */
-// StaffProfileScreen.js
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-
-const tasks = [
-  { title: 'Task 1', description: 'Description of Task 1' },
-  { title: 'Task 2', description: 'Description of Task 2' },
-  // Add more tasks as needed
-];
 
 const StaffProfileScreen = ({ route, navigation }) => {
   const { staffId } = route.params;

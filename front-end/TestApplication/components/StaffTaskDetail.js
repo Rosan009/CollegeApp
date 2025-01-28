@@ -1,8 +1,6 @@
-/* eslint-disable prettier/prettier */
-// TaskDetailScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import * as ImagePicker from 'react-native-image-picker'; // Make sure to install this package
+import * as ImagePicker from 'react-native-image-picker'; 
 
 const StaffTaskDetail = ({ route }) => {
   const { task } = route.params;

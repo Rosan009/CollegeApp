@@ -9,7 +9,7 @@ const StaffListScreen = ({ navigation }) => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://pactaworks.com/clg/staffs.php', {
+      const response = await axios.get("", {
         headers: {
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache',
