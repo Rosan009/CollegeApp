@@ -24,7 +24,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         return new InMemoryUserDetailsManager(
                 User.withUsername("admin")
-                        .password(passwordEncoder().encode("admin123")) // Encrypted password
+                        .password(passwordEncoder().encode("admin123"))
                         .roles("ADMIN")
                         .build()
         );
@@ -48,8 +48,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Only admin can access admin APIs
-                        .requestMatchers("/staff/**").hasRole("STAFF") // Staff has access to staff APIs
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/staff/**").hasRole("STAFF")
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated()
                 )
