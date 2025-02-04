@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,15 +21,15 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    private String name;
     private String username;
+    private String phoneNumber;
+    private String staffId;
     private String password;
     private String role;
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(() -> "ROLE_" + role); // Fix: Prefix with ROLE_
+        return Collections.singletonList(() -> "ROLE_" + role);
     }
 
     @Override
