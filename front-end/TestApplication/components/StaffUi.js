@@ -1,7 +1,24 @@
-import React from 'react'
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
-export const StaffUi = () => {
+const StaffUi = () => {
   return (
-    <div>StaffUi</div>
-  )
-}
+    <View style={styles.container}>
+      <Text style={styles.welcomeText}>Welcome, Staff!</Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  welcomeText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+});
+
+export default StaffUi;

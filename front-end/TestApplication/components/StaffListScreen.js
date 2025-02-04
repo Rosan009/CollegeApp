@@ -1,30 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const StaffListScreen = ({ navigation }) => {
   const [staffData, setStaffData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch staff data from backend
   const fetchData = async () => {
     try {
-      const response = await axios.get("", {
+      const token = await AsyncStorage.getItem('authToken');
+      
+      if (!token) {
+        Alert.alert('Error', 'Authentication token is missing.');
+        return;
+      }
+
+      // Fetch staff list data from backend
+      const response = await axios.get('http://10.0.2.2:8083/admin/get', {
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          'Authorization': `Bearer ${token}`, // Add token in the Authorization header
         },
       });
-      setStaffData(response.data); 
-      console.log(response.data);
+
+      if (response.status === 200) {
+        setStaffData(response.data); // Assuming response.data contains an array of staff members
+      } else {
+        Alert.alert('Error', 'Failed to fetch staff data.');
+      }
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching staff data:', error);
+      Alert.alert('Error', 'Failed to fetch staff data. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Use useEffect to fetch data on screen load
   useEffect(() => {
     fetchData();
   }, []);
@@ -36,34 +50,24 @@ const StaffListScreen = ({ navigation }) => {
   const navigateToStaffDetail = (staff) => {
     navigation.navigate('StaffDetail', {
       staffName: staff.name,
-      staffImage: staff.img,
       staffId: staff.staff_id,
-      staffEmail: staff.email,
-      staffMobile: staff.mobile
+      staffUsername: staff.username,
     });
   };
 
   const renderItem = ({ item }) => {
-    // Default image URL (replace with your own placeholder image)
-    const defaultImage = 'https://example.com/path/to/default-image.png';
-    const staffImage = item.img && item.img !== '' ? item.img : defaultImage;
-
     return (
-      <TouchableOpacity key={item.email} style={styles.staffBox} onPress={() => navigateToStaffDetail(item)}>
-        {item.img && item.img !== '' ? (
-        <Image source={{ uri: staffImage }} style={styles.staffImage} resizeMode="cover" />
-        ):(
-          <Icon name="user" size={30} color="#4CAF50" />
-        )}
+      <TouchableOpacity style={styles.staffBox} onPress={() => navigateToStaffDetail(item)}>
+        <Icon name="user" size={30} color="#4CAF50" />
         <View style={styles.staffInfo}>
           <Text style={styles.staffName}>{item.name}</Text>
-          <Text style={styles.staffEmail}>{item.email}</Text>
-          <Text style={styles.staffId}>{item.staff_id}</Text>
+          <Text style={styles.staffUsername}>{item.username}</Text>
+          <Text style={styles.staffId}>{item.staffId}</Text>
         </View>
       </TouchableOpacity>
     );
   };
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -71,19 +75,28 @@ const StaffListScreen = ({ navigation }) => {
           <Icon name="user-plus" size={30} color="#4CAF50" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Staff Members</Text>
+        <Text></Text>
       </View>
+      
+      
       {loading ? (
         <ActivityIndicator size="large" color="#4CAF50" />
       ) : (
         <FlatList
-          data={staffData}
+          data={staffData.filter(item => item.role !== "ADMIN")}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => 
+            <View>
+          <Text>{item.name}</Text>
+          <Text>{item.username}</Text>
+          <Text>{item.staffId}</Text>
+            </View>
+        }  
         />
-      )}
+     )}
     </SafeAreaView>
   );
-};
+}  
 
 const styles = StyleSheet.create({
   container: {
@@ -109,28 +122,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  staffImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-    overflow: 'hidden',
-    resizeMode: 'cover', // Ensure the image covers the space correctly
-  },
   staffInfo: {
     flex: 1,
+    marginLeft: 10,
   },
   staffName: {
     fontSize: 18,
     color: '#333',
   },
-  staffId: {
-    fontSize: 18,
-    color: '#333',
-  },
-  staffEmail: {
+  staffUsername: {
     fontSize: 14,
     color: '#666',
+  },
+  staffId: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 

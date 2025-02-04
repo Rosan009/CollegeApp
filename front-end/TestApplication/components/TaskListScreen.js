@@ -1,16 +1,55 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TaskListScreen = ({ navigation }) => {
-  const [tasks, setTasks] = useState([]); // State to store tasks
+  const [staffData, setStaffData] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+  const [tasks, setTasks] = useState([]);  
 
-  const navigateToTask = (staffId, staffName, staffImage) => {
-    navigation.navigate('Task', { staffId, staffName, staffImage, addTask: addTask });
+  useEffect(() => {
+    fetchStaffData();
+  }, []);
+
+  const fetchStaffData = async () => {
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+
+      if (!token) {
+        Alert.alert('Error', 'Authentication token is missing.');
+        return;
+      }
+
+      const response = await axios.get('http://10.0.2.2:8083/admin/get', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 200) {
+        setStaffData(response.data);
+      } else {
+        Alert.alert('Error', 'Failed to fetch staff data.');
+      }
+    } catch (error) {
+      console.error('Error fetching staff data:', error);
+      Alert.alert('Error', 'Failed to fetch staff data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const navigateToTaskView = (task) => {
-    navigation.navigate('TaskView', task);
+  const navigateToTask = (staffId, staffName) => {
+    navigation.navigate('Task', { staffId, staffName, addTask: addTask });
+  };
+
+  const navigateToTaskView = (staffId) => {
+    const task = tasks.find(task => task.staffId === staffId);
+    if (task) {
+      navigation.navigate('TaskView', task);
+    } else {
+      Alert.alert('No Tasks', 'No tasks assigned to this staff member.');
+    }
   };
 
   const addTask = (task) => {
@@ -20,18 +59,14 @@ const TaskListScreen = ({ navigation }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.staffBox}>
-      <TouchableOpacity
-        onPress={() => navigateToTask(item.staffId, item.staffName, item.staffImage)}
-        style={styles.staffInfoContainer}
-      >
-        <Image source={item.staffImage} style={styles.staffImage} />
-        <Text style={styles.staffName}>{item.staffName}</Text>
+      <TouchableOpacity onPress={() => navigateToTask(item.staffId, item.name)} style={styles.staffInfoContainer}>
+        <Text style={styles.staffName}>{item.name}</Text>
       </TouchableOpacity>
       <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => navigateToTask(item.staffId, item.staffName, item.staffImage)}>
+        <TouchableOpacity onPress={() => navigateToTask(item.staffId, item.name)}>
           <Icon name="plus" size={24} color="#007BFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateToTaskView(tasks.find(task => task.staffId === item.staffId))}>
+        <TouchableOpacity onPress={() => navigateToTaskView(item.staffId)}>
           <Icon name="eye" size={24} color="#28A745" style={styles.iconMargin} />
         </TouchableOpacity>
       </View>
@@ -40,11 +75,15 @@ const TaskListScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.staffId.toString()}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#007BFF" />
+      ) : (
+        <FlatList
+          data={staffData.filter(item => item.role !== "ADMIN")}
+          renderItem={renderItem}
+          keyExtractor={(item) => <Text>{item.name}</Text>}
+        />
+      )}
     </View>
   );
 };
@@ -64,19 +103,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3F2FD',
     borderRadius: 10,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.15,
     shadowRadius: 2,
     elevation: 2,
-  },
-  staffImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
   },
   staffInfoContainer: {
     flexDirection: 'row',

@@ -1,109 +1,115 @@
-/* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Image, TouchableOpacity } from 'react-native';
-import * as ImagePicker from 'react-native-image-picker';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegistrationScreen = ({ navigation }) => {
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [userName, setUserName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [staffId, setStaffId] = useState('');
   const [password, setPassword] = useState('');
-  const [image, setImage] = useState(null);
+  const [token, setToken] = useState(null);  // Token state to store the retrieved token
 
-  const handleImagePicker = () => {
-    ImagePicker.launchImageLibrary({}, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        setImage(response.assets[0].uri);
+  // Retrieve the token on component mount
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('authToken');
+        setToken(storedToken);  // Set the token to state
+      } catch (error) {
+        console.error('Error retrieving token:', error);
+        Alert.alert('Error', 'Failed to load authentication token.');
       }
-    });
-  };
+    };
+    
+    fetchToken();
+  }, []);  // Empty dependency array to run once when the component mounts
 
   const handleRegister = () => {
-    if (!name || !email || !phoneNumber || !staffId || !password) {
+    if (!name || !userName || !phoneNumber || !staffId || !password) {
       Alert.alert('Error', 'All fields are required.');
       return;
     }
-
-    if (phoneNumber.length !== 10) {
-      Alert.alert('Error', 'Phone number should be 10 digits.');
+  
+    // Phone number validation
+    const isValidPhoneNumber = /^\d{10}$/.test(phoneNumber);
+    if (!isValidPhoneNumber) {
+      Alert.alert('Error', 'Phone number should only contain digits and be 10 digits long.');
       return;
     }
-
-    // Create FormData object for image if you want to upload
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('staff_id', staffId);
-    formData.append('mobile', phoneNumber);
-    formData.append('password', password);
-
-    if (image) {
-      formData.append('image', {
-        uri: image,
-        type: 'image/jpeg', // or the appropriate mime type
-        name: 'photo.jpg',
-      });
+  
+    if (!token) {
+      Alert.alert('Error', 'You must be logged in to register staff.');
+      return;
     }
-
-    // Make API call
-    fetch('https://pactaworks.com/clg/reg.php', {
+  
+    const requestData = {
+      username: userName,
+      name: name,
+      phoneNumber: phoneNumber,
+      staffId: staffId,
+      password: password,
+    };
+  
+    fetch('http://10.0.2.2:8083/admin/createStaff', {
       method: 'POST',
-      body: formData,
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
+      body: JSON.stringify(requestData),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) { // Adjust based on your API response structure
-        Alert.alert('Success', 'Staff Registration Successful!');
-        navigation.navigate('StaffList');
-      } else {
-        Alert.alert('Error', data.message || 'Registration failed.');
-      }
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      Alert.alert('Error', 'Registration failed. Please try again.');
-    });
+      .then((response) => {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return response.json(); // If JSON, parse it as JSON
+        }
+        return response.text(); // Otherwise, handle it as plain text
+      })
+      .then((data) => {
+        if (typeof data === 'string') {
+          console.log('Raw Text Response:', data);
+          // Handle the success message in plain text
+          if (data.includes("Successfully registered")) {
+            Alert.alert('Success', 'Staff Registration Successful!');
+            navigation.navigate('StaffList');
+          } else {
+            Alert.alert('Error', 'Registration failed.');
+          }
+        } else {
+          // Handle the JSON response
+          if (data.success) {
+            Alert.alert('Success', 'Staff Registration Successful!');
+            navigation.navigate('StaffList');
+          } else {
+            Alert.alert('Error', data.message || 'Registration failed.');
+          }
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        Alert.alert('Error', 'Registration failed. Please try again.');
+      });
   };
-
+  
+  
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Staff Registration</Text>
-
-      <View style={styles.imageContainer}>
-        <TouchableOpacity onPress={handleImagePicker}>
-          {image ? (
-            <Image source={{ uri: image }} style={styles.image} />
-          ) : (
-            <Icon name="user-circle" size={100} color="#ccc" />
-          )}
-        </TouchableOpacity>
-      </View>
-
       <TextInput
         style={styles.input}
         placeholder="Name"
         value={name}
         onChangeText={(text) => setName(text)}
       />
-
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
+        placeholder="Username"
+        value={userName}
+        onChangeText={(text) => setUserName(text)}
         keyboardType="email-address"
         autoCapitalize="none"
       />
-
       <TextInput
         style={styles.input}
         placeholder="Phone Number"
@@ -112,14 +118,12 @@ const RegistrationScreen = ({ navigation }) => {
         keyboardType="phone-pad"
         maxLength={10}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Staff ID"
         value={staffId}
         onChangeText={(text) => setStaffId(text)}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -127,7 +131,6 @@ const RegistrationScreen = ({ navigation }) => {
         onChangeText={(text) => setPassword(text)}
         secureTextEntry
       />
-
       <Button title="Register" onPress={handleRegister} />
     </View>
   );
@@ -144,16 +147,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     textAlign: 'center',
-  },
-  imageContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    marginTop: 10,
   },
   input: {
     height: 40,

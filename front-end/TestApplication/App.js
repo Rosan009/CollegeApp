@@ -11,6 +11,7 @@ import TaskScreen from './components/TaskScreen';
 import TaskView from './components/TaskView';
 import StaffProfileScreen from './components/StaffProfileScreen';
 import StaffTaskDetail from './components/StaffTaskDetail';
+import  StaffUi  from './components/StaffUi';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,7 @@ const App = () => {
         <Stack.Screen name="TaskView" component={TaskView} />
         <Stack.Screen name="StaffProfile" component={StaffProfileScreen} />
         <Stack.Screen name="TaskDetail" component={StaffTaskDetail} />
+        <Stack.Screen name="StaffUi" component={StaffUi} />
       </Stack.Navigator>
     </NavigationContainer>
   );
