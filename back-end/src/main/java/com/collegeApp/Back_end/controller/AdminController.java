@@ -1,10 +1,10 @@
 package com.collegeApp.back_end.controller;
 
 import com.collegeApp.back_end.model.Task;
+import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.repo.UserRepo;
 import com.collegeApp.back_end.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +29,9 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
     @PostMapping("/createStaff")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> registerStaff(
@@ -47,35 +50,32 @@ public class AdminController {
         return ResponseEntity.ok(staffList);
     }
 
+
     @PostMapping("/addTask")
-    public ResponseEntity<Task> addTask(
-            @RequestParam String staffId,
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam(required = false) MultipartFile file) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public String addTask(
+            @RequestBody Task task,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
 
-        Task task = new Task();
-        task.setStaffId(staffId);
-        task.setTitle(title);
-        task.setDescription(description);
-
-        if (file != null && !file.isEmpty()) {
-            try {
-                String filePath = UPLOAD_DIR + file.getOriginalFilename();
-                file.transferTo(new File(filePath));
+            if (file != null) {
+                String filePath = saveFile(file);
                 task.setFilePath(filePath);
-            } catch (IOException e) {
-                return ResponseEntity.status(500).body(null);
             }
-        }
 
-        Task savedTask =adminService.addTask(task);
-        return ResponseEntity.ok(savedTask);
+            taskRepository.save(task);
+            return "Task added successfully!";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
     }
 
-    @GetMapping("/tasks/{staffId}")
-    public ResponseEntity<List<Task>> getTasks(@PathVariable Long staffId) {
-        List<Task> tasks = taskService.getTasksByStaffId(staffId);
-        return ResponseEntity.ok(tasks);
+    private String saveFile(MultipartFile file) throws IOException {
+        String fileName = file.getOriginalFilename();
+        String filePath = "path/to/directory/" + fileName;
+
+         File dest = new File(filePath);
+        file.transferTo(dest);
+        return filePath;
     }
 }

@@ -1,6 +1,5 @@
 package com.collegeApp.back_end.service;
 
-import com.collegeApp.back_end.model.Task;
 import com.collegeApp.back_end.model.User;
 import com.collegeApp.back_end.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,4 @@ public class AdminService {
         userRepo.save(user);
     }
 
-    public Task addTask(Task task) {
-        return taskRepository.save(task);
-    }
 }
