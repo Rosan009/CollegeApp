@@ -8,11 +8,6 @@ const LoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!username || !password) {
-      Alert.alert('Error', 'Please enter username and password');
-      return;
-    }
-  
     setLoading(true);
     try {
       const response = await fetch('http://10.0.2.2:8083/login', {
@@ -21,32 +16,26 @@ const LoginScreen = ({ navigation }) => {
         body: JSON.stringify({ username, password }),
       });
   
-      let text = await response.text(); // Read response as text
+      let text = await response.text();
       console.log("Raw Response:", text);
   
-      // Check if response is empty
-      if (!text) {
-        throw new Error('Empty response from server');
-      }
+      if (!text) throw new Error('Empty response from server');
   
-      let data = JSON.parse(text); // Parse JSON if valid
+      let data = JSON.parse(text);
       console.log("API Response:", data);
   
       if (response.ok) {
         await AsyncStorage.setItem('authToken', data.token);
-        const userRole = data.role;
-  
-        console.log("User Role:", userRole);
-  
-        if (userRole === 'ADMIN') {
+        
+        if (data.role === 'ADMIN') {
           navigation.replace('Home');
-        } else if (userRole === 'STAFF') {
-          navigation.replace('StaffUi');
+        } else if (data.role === 'STAFF' && data.staffId) {
+          navigation.navigate('StaffUi', { staffId: data.staffId }); // Pass staffId
         } else {
-          Alert.alert('Error', 'Invalid user role');
+          throw new Error('Missing staffId in response');
         }
       } else {
-        Alert.alert('Login Failed', data.error || 'Invalid credentials');
+        throw new Error(data.error || 'Invalid credentials');
       }
     } catch (error) {
       console.error("Login Error:", error);
@@ -54,9 +43,8 @@ const LoginScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
   
-
   return (
     <View style={styles.container}>
       <Image source={require('../components/img/psna.jpg')} style={styles.logo} />
