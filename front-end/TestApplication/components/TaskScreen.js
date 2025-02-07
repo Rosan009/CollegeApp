@@ -6,7 +6,7 @@ import axios from 'axios';
 import { readFile } from 'react-native-fs'; // To read file and encode it to base64
 
 const TaskScreen = ({ route, navigation }) => {
-  const { staffName } = route.params;
+  const { staffName,StaffId } = route.params;
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [file, setFile] = useState(null);
@@ -47,58 +47,64 @@ const TaskScreen = ({ route, navigation }) => {
   };
 
   // 📤 Handle Form Submission
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
     if (!taskTitle || !taskDescription) {
-      Alert.alert('Error', 'Both title and description are required.');
+      Alert.alert("Error", "Both title and description are required.");
       return;
     }
-
+  
     if (!token) {
-      Alert.alert('Error', 'Authentication token is missing.');
+      Alert.alert("Error", "Authentication token is missing.");
       return;
     }
-
-    // Prepare JSON payload
-    const formData = {
-      title: taskTitle,
-      description: taskDescription,
-      staffName: staffName,
-    };
-
-    // If file is selected, convert it to base64 and append to formData
-    if (file) {
-      try {
-        const fileBase64 = await readFile(file.uri, 'base64');
-        formData.file = fileBase64;
-        formData.fileName = file.name;
-        formData.fileType = file.type; // Optional: Add file type
-      } catch (error) {
-        console.error('Error converting file to base64:', error);
-        Alert.alert('Error', 'Failed to convert file to base64.');
-        return;
-      }
-    }
-
+  
     try {
-      console.log("Token in Request:", token);  // Debug: Log token in request
-      const response = await axios.post('http://10.0.2.2:8083/admin/addTask', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
+    
+      const formData = new FormData();
+      formData.append("task", "Task description here");
+      formData.append("file", file);
+  
+      // Convert the task details to JSON and append it
+      formData.append(
+        "task",
+        new Blob(
+          [
+            JSON.stringify({
+              title: taskTitle,
+              description: taskDescription,
+              staffId:StaffId,
+            }),
+          ],
+          { type: "application/json" }
+        )
+      );
+  
+      // Send request
+      const response = await axios.post(
+        "http://10.0.2.2:8083/admin/addTask",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
       if (response.status === 200) {
-        Alert.alert('Success', 'Task added successfully!');
+        Alert.alert("Success", "Task added successfully!");
         navigation.goBack();
       } else {
-        Alert.alert('Error', 'Failed to add task.');
+        Alert.alert("Error", "Failed to add task.");
       }
     } catch (error) {
-      console.error('Error adding task:', error);
-      Alert.alert('Error', 'Network error occurred. Please try again.');
+      console.error("Error adding task:", error);
+      Alert.alert("Error", "Network error occurred. Please try again.");
     }
   };
+  
 
   return (
     <View style={styles.container}>
