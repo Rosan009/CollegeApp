@@ -63,11 +63,8 @@ const TaskScreen = ({ route, navigation }) => {
     try {
     
       const formData = new FormData();
-      formData.append("task", "Task description here");
       formData.append("file", file);
-  
-      // Convert the task details to JSON and append it
-      formData.append(
+        formData.append(
         "task",
         new Blob(
           [
