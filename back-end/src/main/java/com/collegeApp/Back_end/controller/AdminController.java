@@ -4,7 +4,9 @@ import com.collegeApp.back_end.model.Task;
 import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.repo.UserRepo;
 import com.collegeApp.back_end.service.AdminService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,9 @@ public class AdminController {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @PostMapping("/createStaff")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> registerStaff(
@@ -50,32 +55,18 @@ public class AdminController {
         return ResponseEntity.ok(staffList);
     }
 
-
     @PostMapping("/addTask")
     @PreAuthorize("hasRole('ADMIN')")
-    public String addTask(
-            @RequestBody Task task,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<String> addTask(
+            @RequestPart("task") String taskJson,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-
-            if (file != null) {
-                String filePath = saveFile(file);
-                task.setFilePath(filePath);
-            }
-
-            taskRepository.save(task);
-            return "Task added successfully!";
+            Task task = objectMapper.readValue(taskJson, Task.class);
+            adminService.saveTask(task, file);
+            return ResponseEntity.ok("Task added successfully!");
         } catch (Exception e) {
-            return "Error: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding task: " + e.getMessage());
         }
-    }
-
-    private String saveFile(MultipartFile file) throws IOException {
-        String fileName = file.getOriginalFilename();
-        String filePath = "path/to/directory/" + fileName;
-
-         File dest = new File(filePath);
-        file.transferTo(dest);
-        return filePath;
     }
 }
