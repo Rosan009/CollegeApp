@@ -10,7 +10,12 @@ import java.util.List;
 @Service
 public class StaffService {
      @Autowired
-     private TaskRepository taskRepository;
+     private static TaskRepository taskRepository;
+
+    public static Task getTaskById(int taskId) {
+       return taskRepository.findById(taskId).get();
+    }
+
     public List<Task> getTasksByStaffId(String staffId) {
         return taskRepository.findByStaffId(staffId);
     }
