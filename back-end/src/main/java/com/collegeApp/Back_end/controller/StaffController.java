@@ -34,40 +34,15 @@ public class StaffController {
     private TaskRepository taskRepository;
 
     @GetMapping("/getTasks/{staffId}")
-    @PreAuthorize("hasRole('STAFF')")
-    public ResponseEntity<List<Map<String, Object>>> getTasks(@PathVariable String staffId) {
-        List<Task> tasks = staffService.getTasksByStaffId(staffId);
-
-        List<Map<String, Object>> taskResponses = tasks.stream().map(task -> {
-            Map<String, Object> taskMap = new HashMap<>();
-            taskMap.put("id", task.getId());
-            taskMap.put("title", task.getTitle());
-            taskMap.put("description", task.getDescription());
-
-            // Generate file URL instead of returning only file name
-            if (task.getFileData() != null) {
-                String fileUrl = "http://localhost:8083/staff/download/" + task.getId(); // Make sure to use the correct base URL for your environment
-                taskMap.put("filePath", fileUrl);
-            } else {
-                taskMap.put("filePath", null);
-            }
-
-            return taskMap;
-        }).toList();
-
-        return ResponseEntity.ok(taskResponses);
+    public ResponseEntity<List<Task>> getTasks(@PathVariable String staffId) {
+        return ResponseEntity.ok(staffService.getTasksByStaffId(staffId));
     }
 
-    // Endpoint to serve the file by task ID
-    @GetMapping("/staff/download/{taskId}")
+    @GetMapping("/download/{taskId}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable int taskId) {
         Task task = StaffService.getTaskById(taskId);
-        if (task.getFileData() != null) {
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + task.getFileName())
-                    .body(task.getFileData());
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + task.getFileName() + "\"")
+                .body(task.getFileData());
     }
-
 }

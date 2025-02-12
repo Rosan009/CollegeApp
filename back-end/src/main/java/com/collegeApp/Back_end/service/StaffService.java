@@ -13,7 +13,7 @@ public class StaffService {
      private static TaskRepository taskRepository;
 
     public static Task getTaskById(int taskId) {
-       return taskRepository.findById(taskId).get();
+       return taskRepository.findById(taskId).orElse(null);
     }
 
     public List<Task> getTasksByStaffId(String staffId) {
