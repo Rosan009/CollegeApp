@@ -9,15 +9,15 @@ import java.util.List;
 
 @Service
 public class StaffService {
-     @Autowired
-     private static TaskRepository taskRepository;
-
-    public static Task getTaskById(int taskId) {
-       return taskRepository.findById(taskId).orElse(null);
-    }
+    @Autowired
+    private TaskRepository taskRepository;
 
     public List<Task> getTasksByStaffId(String staffId) {
         return taskRepository.findByStaffId(staffId);
+    }
+
+    public Task getTaskById(int taskId) {
+        return taskRepository.findById(taskId).orElse(null);
     }
 }
 

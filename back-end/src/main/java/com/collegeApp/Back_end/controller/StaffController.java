@@ -40,7 +40,7 @@ public class StaffController {
 
     @GetMapping("/download/{taskId}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable int taskId) {
-        Task task = StaffService.getTaskById(taskId);
+        Task task = staffService.getTaskById(taskId);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + task.getFileName() + "\"")
                 .body(task.getFileData());
