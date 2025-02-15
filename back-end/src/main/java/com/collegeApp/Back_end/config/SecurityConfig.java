@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/get").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/staff/**").hasRole("STAFF")
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() //Authorize
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
