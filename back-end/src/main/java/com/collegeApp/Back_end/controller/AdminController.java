@@ -39,7 +39,7 @@ public class AdminController {
 
     @PostMapping("/createStaff")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Object>> registerStaff(
+    public ResponseEntity<Map<String, Object>> registerStaff( //TO register staff
             @RequestBody User user) throws IOException {
         adminService.addStaff(user);
 
