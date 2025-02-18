@@ -49,14 +49,14 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get")// To retreive Staff Information
     public ResponseEntity<List<User>> getAllStaff() {
         List<User> staffList = userRepository.findAll();
         return ResponseEntity.ok(staffList);
     }
 
     @PostMapping("/addTask")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')") //To Assign Task to Corresponding Staff
     public ResponseEntity<String> addTask(
             @RequestPart("task") String taskJson,
             @RequestPart(value = "file", required = false) MultipartFile file) {
