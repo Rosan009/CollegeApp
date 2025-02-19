@@ -39,7 +39,7 @@ public class AdminController {
 
     @PostMapping("/createStaff")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Object>> registerStaff( //TO register staff
+    public ResponseEntity<Map<String, Object>> registerStaff(
             @RequestBody User user) throws IOException {
         adminService.addStaff(user);
 
@@ -49,14 +49,14 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/get")// To retreive Staff Information
+    @GetMapping("/get")
     public ResponseEntity<List<User>> getAllStaff() {
         List<User> staffList = userRepository.findAll();
         return ResponseEntity.ok(staffList);
     }
 
     @PostMapping("/addTask")
-    @PreAuthorize("hasRole('ADMIN')") //To Assign Task to Corresponding Staff
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> addTask(
             @RequestPart("task") String taskJson,
             @RequestPart(value = "file", required = false) MultipartFile file) {
