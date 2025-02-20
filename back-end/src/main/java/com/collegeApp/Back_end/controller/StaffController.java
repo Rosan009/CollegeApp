@@ -5,6 +5,7 @@ import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.service.StaffService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,11 +39,17 @@ public class StaffController {
         return ResponseEntity.ok(staffService.getTasksByStaffId(staffId));
     }
 
-    @GetMapping("/download/{taskId}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable int taskId) {
-        Task task = staffService.getTaskById(taskId);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + task.getFileName() + "\"")
-                .body(task.getFileData());
+    @GetMapping("/downloadFile/{fileName}")
+    public ResponseEntity<?> downloadFile(@PathVariable String fileName) {
+        Optional<Task> taskOptional = taskRepository.findByFileName(fileName);
+
+        if (taskOptional.isPresent()) {
+            Task task = taskOptional.get();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + task.getFileName() + "\"")
+                    .body(new ByteArrayResource(task.getFileData()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
+        }
     }
 }
