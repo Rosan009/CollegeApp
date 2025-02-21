@@ -1,28 +1,21 @@
 package com.collegeApp.back_end.controller;
 
+import com.collegeApp.back_end.model.StaffMessage;
 import com.collegeApp.back_end.model.Task;
 import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.service.StaffService;
-import jakarta.annotation.Resource;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -33,6 +26,9 @@ public class StaffController {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @GetMapping("/getTasks/{staffId}")
     public ResponseEntity<List<Task>> getTasks(@PathVariable String staffId) {
@@ -52,4 +48,20 @@ public class StaffController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
         }
     }
+
+    @PostMapping("/sendMessage")
+    @PreAuthorize("hasRole('STAFF')")
+    public ResponseEntity<String> sendMessage(
+            @RequestPart("task") String taskJson,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            StaffMessage task = objectMapper.readValue(taskJson, StaffMessage.class);
+            staffService.saveTask(task, file); 
+            return ResponseEntity.ok("Task added successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding task: " + e.getMessage());
+        }
+    }
+
 }

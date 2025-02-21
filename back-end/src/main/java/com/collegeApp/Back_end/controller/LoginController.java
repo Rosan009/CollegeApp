@@ -14,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,15 +46,17 @@ public class LoginController {
 
             String token = jwtTokenProvider.generateToken(user.getUsername(), normalizedRole);
 
-            Map<String, String> response = Map.of(
+            Map<String, String> response = new HashMap<>(Map.of(
                     "message", "Login successful",
                     "username", userDetails.getUsername(),
                     "role", normalizedRole,
                     "token", token
-            );
+//                    "staffName", user.getName(),
+//                    "staffId", user.getStaffId()
+            ));
             if ("STAFF".equals(normalizedRole)) {
-                response = new java.util.HashMap<>(response);
-                response.put("staffId", dbUser.getStaffId()); // Get staffId from DB
+                response.put("staffId", dbUser.getStaffId());
+                response.put("staffName", dbUser.getName());
             }
 
             return ResponseEntity.ok(response);
