@@ -1,21 +1,40 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // File upload icon
+import AsyncStorage from '@react-native-async-storage/async-storage';  // Import AsyncStorage
+import DocumentPicker from 'react-native-document-picker';
 import axios from 'axios';
 
 export const StaffChat = ({ route }) => {
-  const { staffName, staffId } = route.params; // Assuming staffName and staffId are passed from previous screen
+  const { staffId } = route.params;
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
-  const [token, setToken] = useState('');  
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem('authToken');
+        if (storedToken) {
+          setToken(storedToken);
+        } else {
+          console.error("No token found.");
+        }
+      } catch (error) {
+        console.error('Error retrieving token:', error);
+        Alert.alert('Error', 'Failed to load authentication token.');
+      }
+    };
+    fetchToken();
+  }, []);
 
   const handleFileUpload = async () => {
     try {
-      const result = await DocumentPicker.pick({
+      const result = await DocumentPicker.pickSingle({
         type: [DocumentPicker.types.pdf, DocumentPicker.types.xls, DocumentPicker.types.xlsx, DocumentPicker.types.ppt, DocumentPicker.types.pptx, DocumentPicker.types.doc, DocumentPicker.types.docx],
       });
 
-      setFile(result[0]); // Save selected file
+      setFile(result);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         console.log('User canceled file picker');
@@ -31,11 +50,15 @@ export const StaffChat = ({ route }) => {
       alert('Please type a message!');
       return;
     }
-  
+
+    if (!token) {
+      alert('Authorization token is missing.');
+      return;
+    }
+
     try {
       const formData = new FormData();
-  
-      // Append file if it's selected
+
       if (file) {
         formData.append('file', {
           uri: file.uri,
@@ -44,20 +67,20 @@ export const StaffChat = ({ route }) => {
         });
       }
 
-        const taskData = {
-        message: message,
-        staffId: staffId,
-      };
-  
-      formData.append('task', JSON.stringify(taskData));
-  
+      const taskData = JSON.stringify({ message, staffId });
+
+      formData.append('task', {
+        string: taskData,
+        type: 'application/json',
+      });
+
       const response = await axios.post('http://10.0.2.2:8083/staff/sendMessage', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
         },
       });
-  
+
       if (response.status === 200) {
         setMessage('');
         setFile(null);
@@ -70,13 +93,11 @@ export const StaffChat = ({ route }) => {
       alert('Error sending message.');
     }
   };
-  
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Staff Chat</Text>
 
-      {/* Message Input */}
       <TextInput
         style={styles.input}
         value={message}
@@ -86,12 +107,10 @@ export const StaffChat = ({ route }) => {
       />
 
       <View style={styles.actionsContainer}>
-        {/* File Upload Button */}
         <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
           <Icon name="attach-file" size={30} color="#007bff" />
         </TouchableOpacity>
 
-        {/* Send Button */}
         <Button title="Send" onPress={handleSubmit} color="#007bff" />
       </View>
     </View>

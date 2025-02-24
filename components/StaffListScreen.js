@@ -18,14 +18,15 @@ const StaffListScreen = ({ navigation }) => {
         return;
       }
 
+      // Fetch staff list data from backend
       const response = await axios.get('http://10.0.2.2:8083/admin/get', {
         headers: {
-          'Authorization': `Bearer ${token}`, 
+          'Authorization': `Bearer ${token}`, // Add token in the Authorization header
         },
       });
 
       if (response.status === 200) {
-        setStaffData(response.data); 
+        setStaffData(response.data); // Assuming response.data contains an array of staff members
       } else {
         Alert.alert('Error', 'Failed to fetch staff data.');
       }
@@ -37,6 +38,7 @@ const StaffListScreen = ({ navigation }) => {
     }
   };
 
+  // Use useEffect to fetch data on screen load
   useEffect(() => {
     fetchData();
   }, []);
@@ -53,6 +55,13 @@ const StaffListScreen = ({ navigation }) => {
     });
   };
 
+  const navigateToMessages = (staff) => {
+    navigation.navigate('Messages', {
+      staffId: staff.staff_id,
+      staffName: staff.name,
+    });
+  };
+
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity style={styles.staffBox} onPress={() => navigateToStaffDetail(item)}>
@@ -62,10 +71,18 @@ const StaffListScreen = ({ navigation }) => {
           <Text style={styles.staffUsername}>{item.username}</Text>
           <Text style={styles.staffId}>{item.staffId}</Text>
         </View>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => navigateToStaffDetail(item)}>
+            <Icon name="user-circle" size={25} color="#4CAF50" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigateToMessages(item)}>
+            <Icon name="envelope" size={25} color="#4CAF50" style={styles.messageIcon} />
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -75,7 +92,6 @@ const StaffListScreen = ({ navigation }) => {
         <Text style={styles.headerTitle}>Staff Members</Text>
         <Text></Text>
       </View>
-      
       
       {loading ? (
         <ActivityIndicator size="large" color="#4CAF50" />
@@ -91,10 +107,10 @@ const StaffListScreen = ({ navigation }) => {
             </View>
         }  
         />
-     )}
+      )}
     </SafeAreaView>
   );
-}  
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -119,6 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3F2FD',
     borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   staffInfo: {
     flex: 1,
@@ -135,6 +152,13 @@ const styles = StyleSheet.create({
   staffId: {
     fontSize: 16,
     color: '#333',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  messageIcon: {
+    marginLeft: 15,
   },
 });
 

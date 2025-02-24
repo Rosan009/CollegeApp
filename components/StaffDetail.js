@@ -59,10 +59,10 @@ const StaffDetail = ({ route, navigation }) => {
           )}
           renderItem={({ item }) => (
             <View style={styles.iconContainer}>
-              <TouchableOpacity onPress={() => navigation.navigate('StaffChat')}>
+              <TouchableOpacity onPress={() => navigation.navigate('StaffChat',{staffId,staffName})}>
                 <Icon name="message" size={100} color="#007bff" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('StaffUi')}>
+              <TouchableOpacity onPress={() => navigation.navigate('StaffUi',{staffId})}>
                 <Icon name="visibility" size={100} color="#28a745" />
               </TouchableOpacity>
             </View>
