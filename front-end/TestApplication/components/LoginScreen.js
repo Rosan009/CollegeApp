@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
         if (data.role === 'ADMIN') {
           navigation.replace('Home');
         } else if (data.role === 'STAFF' && data.staffId) {
-          navigation.navigate('StaffUi', { staffId: data.staffId }); // Pass staffId
+          navigation.navigate('StaffUi', { staffId: data.staffId });
         } else {
           throw new Error('Missing staffId in response');
         }
