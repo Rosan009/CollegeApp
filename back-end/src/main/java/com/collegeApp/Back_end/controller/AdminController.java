@@ -1,6 +1,8 @@
 package com.collegeApp.back_end.controller;
 
+import com.collegeApp.back_end.model.StaffMessage;
 import com.collegeApp.back_end.model.Task;
+import com.collegeApp.back_end.repo.StaffMessageRepo;
 import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.repo.UserRepo;
 import com.collegeApp.back_end.service.AdminService;
@@ -32,7 +34,7 @@ public class AdminController {
     private AdminService adminService;
 
     @Autowired
-    private TaskRepository taskRepository;
+    private StaffMessageRepo staffMessageRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -54,6 +56,13 @@ public class AdminController {
         List<User> staffList = userRepository.findAll();
         return ResponseEntity.ok(staffList);
     }
+    @GetMapping("/getMessage/{staffId}")
+    public ResponseEntity<List<StaffMessage>> getMessage(@PathVariable String staffId) {
+        List<StaffMessage> staffList = staffMessageRepo.findByStaffId(staffId);
+        System.out.println("staffId"+staffId);
+        System.out.println(staffList);
+        return ResponseEntity.ok(staffList);
+    }
 
     @PostMapping("/addTask")
     @PreAuthorize("hasRole('ADMIN')")
@@ -69,4 +78,5 @@ public class AdminController {
                     .body("Error adding task: " + e.getMessage());
         }
     }
+
 }
