@@ -59,8 +59,6 @@ public class AdminController {
     @GetMapping("/getMessage/{staffId}")
     public ResponseEntity<List<StaffMessage>> getMessage(@PathVariable String staffId) {
         List<StaffMessage> staffList = staffMessageRepo.findByStaffId(staffId);
-        System.out.println("staffId"+staffId);
-        System.out.println(staffList);
         return ResponseEntity.ok(staffList);
     }
 
@@ -78,5 +76,8 @@ public class AdminController {
                     .body("Error adding task: " + e.getMessage());
         }
     }
-
+    @GetMapping("/getTasks/{staffId}")
+    public ResponseEntity<List<Task>> getTasks(@PathVariable String staffId) {
+        return ResponseEntity.ok(adminService.getTasksByStaffId(staffId));
+    }
 }
