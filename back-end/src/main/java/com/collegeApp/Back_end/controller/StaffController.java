@@ -5,10 +5,12 @@ import com.collegeApp.back_end.model.Task;
 import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.service.StaffService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -36,17 +38,14 @@ public class StaffController {
     }
 
     @GetMapping("/downloadFile/{fileName}")
-    public ResponseEntity<?> downloadFile(@PathVariable String fileName) {
-        Optional<Task> taskOptional = taskRepository.findByFileName(fileName);
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
+        Task task = taskRepository.findByFileName(fileName)
+                .orElseThrow(() -> new RuntimeException("File not found: " + fileName));
 
-        if (taskOptional.isPresent()) {
-            Task task = taskOptional.get();
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + task.getFileName() + "\"")
-                    .body(new ByteArrayResource(task.getFileData()));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
-        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + task.getFileName() + "\"")
+                .body(new ByteArrayResource(task.getFileData()));
     }
 
     @PostMapping("/sendMessage")
@@ -56,7 +55,7 @@ public class StaffController {
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
             StaffMessage task = objectMapper.readValue(taskJson, StaffMessage.class);
-            staffService.saveTask(task, file); 
+            staffService.saveTask(task, file);
             return ResponseEntity.ok("Task added successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
