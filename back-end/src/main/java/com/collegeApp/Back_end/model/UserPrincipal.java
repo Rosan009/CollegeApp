@@ -9,9 +9,9 @@ import java.util.Collections;
 
 public class UserPrincipal implements UserDetails {
 
-    private final User user;
+    private final com.collegeApp.back_end.model.User user;
 
-    public UserPrincipal(User user) {
+    public UserPrincipal(com.collegeApp.back_end.model.User user) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -20,7 +20,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole())); // Fix: Prefix with ROLE_
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
     }
 
 
