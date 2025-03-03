@@ -40,17 +40,9 @@ const TaskListScreen = ({ navigation }) => {
   };
 
   const navigateToTask = (staffId, staffName) => {
-    navigation.navigate('Task', { staffId, staffName, addTask: addTask });
+    navigation.navigate('Task', { staffId, staffName});
   };
 
-  const navigateToTaskView = (staffId) => {
-    const task = tasks.find(task => task.staffId === staffId);
-    if (task) {
-      navigation.navigate('TaskView', task);
-    } else {
-      Alert.alert('No Tasks', 'No tasks assigned to this staff member.');
-    }
-  };
 
   const addTask = (task) => {
     setTasks([...tasks, task]);
@@ -66,7 +58,7 @@ const TaskListScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigateToTask(item.staffId, item.name)}>
           <Icon name="plus" size={24} color="#007BFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateToTaskView(item.staffId)}>
+        <TouchableOpacity onPress={() =>navigation.navigate("AdminViewTask",{staffId:item.staffId})}>
           <Icon name="eye" size={24} color="#28A745" style={styles.iconMargin} />
         </TouchableOpacity>
       </View>

@@ -1,18 +1,13 @@
-// StaffDetailScreen.js
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 const StaffDetailScreen = ({ route }) => {
-  const { staffName, staffMobile, staffImage, staffEmail, staffId } = route.params;
+  const { staffName,staffId } = route.params;
 
   return (
     <View style={styles.container}>
-      <Image source={staffImage} style={styles.staffImage} />
       <Text style={styles.staffName}>{staffName}</Text>
       <Text style={styles.staffId}>ID: {staffId}</Text>
-      <Text style={styles.staffId}>Email: {staffEmail}</Text>
-      <Text style={styles.staffId}>Mobile: {staffMobile}</Text>
-
     </View>
   );
 };

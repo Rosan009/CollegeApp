@@ -9,9 +9,12 @@ import TaskListScreen from './components/TaskListScreen';
 import StaffDetailScreen from './components/StaffDetailScreen'; 
 import TaskScreen from './components/TaskScreen';
 import TaskView from './components/TaskView';
-import StaffProfileScreen from './components/StaffProfileScreen';
 import StaffTaskDetail from './components/StaffTaskDetail';
 import  StaffUi  from './components/StaffUi';
+import StaffDetail from './components/StaffDetail';
+import StaffChat from './components/StaffChat';
+import AdminChat from './components/AdminChat';
+import AdminViewTask from './components/AdminViewTask';
 
 const Stack = createStackNavigator();
 
@@ -24,12 +27,15 @@ const App = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="StaffList" component={StaffListScreen} />
         <Stack.Screen name="TaskList" component={TaskListScreen} />
-        <Stack.Screen name="StaffDetailScreeen" component={StaffDetailScreen} />
+        <Stack.Screen name="StaffDetailScreen" component={StaffDetailScreen} />
         <Stack.Screen name="Task" component={TaskScreen} />
         <Stack.Screen name="TaskView" component={TaskView} />
-        <Stack.Screen name="StaffProfile" component={StaffProfileScreen} />
         <Stack.Screen name="TaskDetail" component={StaffTaskDetail} />
         <Stack.Screen name="StaffUi" component={StaffUi} />
+        <Stack.Screen name="StaffDetail" component={StaffDetail} />
+        <Stack.Screen name="StaffChat" component={StaffChat} />
+        <Stack.Screen name="AdminChat" component={AdminChat} />
+        <Stack.Screen name="AdminViewTask" component={AdminViewTask} />
       </Stack.Navigator>
     </NavigationContainer>
   );

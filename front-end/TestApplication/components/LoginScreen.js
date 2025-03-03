@@ -6,44 +6,34 @@ const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://10.0.2.2:8083/login', {
+      console.log('Sending request to API...');
+      const response = await fetch('http://192.168.x.x:8083/login', {  // Use your actual IP
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
   
-      let text = await response.text();
-      console.log("Raw Response:", text);
-  
-      if (!text) throw new Error('Empty response from server');
-  
-      let data = JSON.parse(text);
-      console.log("API Response:", data);
+      console.log('Received response:', response);
+      const data = await response.json();  // Parse JSON directly
+      console.log('Parsed response:', data);
   
       if (response.ok) {
         await AsyncStorage.setItem('authToken', data.token);
-        
-        if (data.role === 'ADMIN') {
-          navigation.replace('Home');
-        } else if (data.role === 'STAFF' && data.staffId) {
-          navigation.navigate('StaffUi', { staffId: data.staffId });
-        } else {
-          throw new Error('Missing staffId in response');
-        }
+        // Continue with navigation logic...
       } else {
         throw new Error(data.error || 'Invalid credentials');
       }
     } catch (error) {
-      console.error("Login Error:", error);
+      console.error('Login error:', error);
       Alert.alert('Error', error.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
-  };  
+  };
+  
   
   return (
     <View style={styles.container}>

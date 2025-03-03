@@ -3,9 +3,8 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOp
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
-import moment from 'moment'; // Import moment.js for date formatting
 
-const StaffUi = ({ route, navigation }) => {
+const AdminChat = ({ route, navigation }) => {
   const { staffId } = route.params;
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,22 +22,21 @@ const StaffUi = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://10.0.2.2:8083/staff/getTasks/${staffId}`, {
+      const response = await fetch(`http://10.0.2.2:8083/admin/getMessage/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) {
+      let text = await response.text();
+      let data = JSON.parse(text);
+      if (response.ok) {
+        setTasks(data);
+      } else {
         Alert.alert('Error', 'Failed to fetch tasks');
-        return;
       }
-
-      const data = await response.json();
-      console.log('Tasks:', data);
-      setTasks(data);
     } catch (error) {
-      console.error('Fetch Error:', error);
-      Alert.alert('Error', 'Something went wrong while fetching tasks');
+      console.error("Fetch Error:", error);
+      Alert.alert('Error', error.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -46,31 +44,28 @@ const StaffUi = ({ route, navigation }) => {
 
   const openFile = async (fileData, fileName, fileType) => {
     if (!fileData || !fileName || !fileType) {
-      Alert.alert('Error', 'File data or metadata is missing');
+      Alert.alert('Error', 'No valid file found');
       return;
     }
 
     try {
-      const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+      // Define local path to save the file
+      const localFile = `${RNFS.DocumentDirectoryPath}/${fileName}`;
 
-      await RNFS.writeFile(localFilePath, fileData, 'base64');
+      // Decode and write Base64 file to local storage
+      await RNFS.writeFile(localFile, fileData, 'base64');
 
-      const fileExists = await RNFS.exists(localFilePath);
-      if (!fileExists) {
-        Alert.alert('Error', 'File could not be saved');
-        return;
-      }
-
-      await FileViewer.open(localFilePath, { showOpenWithDialog: true });
+      // Open the file
+      await FileViewer.open(localFile);
     } catch (error) {
-      console.error('File Open Error:', error);
-      Alert.alert('Error', 'Unable to open the file.');
+      console.error("File Open Error:", error);
+      Alert.alert('Error', 'Cannot open the file. Ensure you have an appropriate app installed.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome</Text>
+      <Text style={styles.welcomeText}>{staffId}</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#007BFF" />
       ) : tasks.length > 0 ? (
@@ -79,18 +74,11 @@ const StaffUi = ({ route, navigation }) => {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={styles.taskItem}>
-              <Text style={styles.taskTitle}>{item.title}</Text>
-              <Text style={styles.taskDescription}>{item.description}</Text>
+              <Text style={styles.taskTitle}>{item.message}</Text>
 
-              {item.createdAt ? (
-                <Text style={styles.taskDate}>
-                  📅 Created At: {moment(item.createdAt).format('DD MMM YYYY, hh:mm A')}
-                </Text>
-              ) : null}
-
-              {item.fileData ? (
-                <TouchableOpacity onPress={() => openFile(item.fileData, item.fileName, item.fileType)}>
-                  <Text style={styles.fileLink}>📂 Open File</Text>
+              {item.file_name ? (
+                <TouchableOpacity onPress={() => openFile(item.file_data, item.file_name, item.file_type)}>
+                  <Text style={styles.fileLink}>📂 {item.file_name}</Text>
                 </TouchableOpacity>
               ) : (
                 <Text style={styles.noFile}>No file available</Text>
@@ -117,11 +105,9 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   taskTitle: { fontSize: 18, fontWeight: 'bold', color: '#333' },
-  taskDescription: { fontSize: 14, color: '#666', marginTop: 5 },
-  taskDate: { fontSize: 14, color: '#888', marginTop: 5 },
   fileLink: { fontSize: 16, color: '#007BFF', textDecorationLine: 'underline', marginTop: 10 },
   noFile: { fontSize: 14, color: 'red', marginTop: 5 },
   noTasks: { fontSize: 16, color: '#666', textAlign: 'center', marginTop: 20 },
 });
 
-export default StaffUi;
+export default AdminChat;
