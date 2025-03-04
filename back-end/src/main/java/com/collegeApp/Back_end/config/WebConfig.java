@@ -9,13 +9,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:19006", "http://10.0.2.2:8081") // Add Metro Bundler & Emulator
+                .allowedOrigins(
+                        "http://localhost:19006", // Metro Bundler
+                        "http://10.0.2.2:8081",   // Emulator
+                        "http://192.168.1.5:8081", // React Native Server
+                        "http://192.168.1.5:8083"  // Spring Boot API
+                        ,"https://abcd1234.ngrok.io"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-
 }
-
-
-
