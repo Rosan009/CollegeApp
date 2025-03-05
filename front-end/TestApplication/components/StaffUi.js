@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOp
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
-import moment from 'moment'; 
+import moment from 'moment';
 
 const StaffUi = ({ route, navigation }) => {
   const { staffId } = route.params;
@@ -84,7 +84,13 @@ const StaffUi = ({ route, navigation }) => {
 
               {item.createdAt ? (
                 <Text style={styles.taskDate}>
-                  📅 Created At: {moment(item.createdAt).format('DD MMM YYYY, hh:mm A')}
+                  Sent at: {moment(item.createdAt).format('DD MMM YYYY, hh:mm A')}
+                </Text>
+              ) : null}
+
+              {item.deadline ? (
+                <Text style={styles.taskDeadline}>
+                  Deadline: {moment(item.deadline).format('DD MMM YYYY, hh:mm A')}
                 </Text>
               ) : null}
 
@@ -119,6 +125,7 @@ const styles = StyleSheet.create({
   taskTitle: { fontSize: 18, fontWeight: 'bold', color: '#333' },
   taskDescription: { fontSize: 14, color: '#666', marginTop: 5 },
   taskDate: { fontSize: 14, color: '#888', marginTop: 5 },
+  taskDeadline: { fontSize: 14, color: '#FF0000', marginTop: 5 }, // Red color for deadline
   fileLink: { fontSize: 16, color: '#007BFF', textDecorationLine: 'underline', marginTop: 10 },
   noFile: { fontSize: 14, color: 'red', marginTop: 5 },
   noTasks: { fontSize: 16, color: '#666', textAlign: 'center', marginTop: 20 },
