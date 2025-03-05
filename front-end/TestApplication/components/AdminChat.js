@@ -22,7 +22,7 @@ const AdminChat = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://10.0.2.2:8083/admin/getMessage/${staffId}`, {
+      const response = await fetch(`http://192.168.4.171:8083/admin/getMessage/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -42,26 +42,30 @@ const AdminChat = ({ route, navigation }) => {
     }
   };
 
-  const openFile = async (fileData, fileName, fileType) => {
-    if (!fileData || !fileName || !fileType) {
-      Alert.alert('Error', 'No valid file found');
-      return;
-    }
-
-    try {
-      // Define local path to save the file
-      const localFile = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-
-      // Decode and write Base64 file to local storage
-      await RNFS.writeFile(localFile, fileData, 'base64');
-
-      // Open the file
-      await FileViewer.open(localFile);
-    } catch (error) {
-      console.error("File Open Error:", error);
-      Alert.alert('Error', 'Cannot open the file. Ensure you have an appropriate app installed.');
-    }
-  };
+   const openFile = async (fileData, fileName, fileType) => {
+      if (!fileData || !fileName || !fileType) {
+        Alert.alert('Error', 'File data or metadata is missing');
+        return;
+      }
+  
+      try {
+        const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+  
+        await RNFS.writeFile(localFilePath, fileData, 'base64');
+  
+        const fileExists = await RNFS.exists(localFilePath);
+        if (!fileExists) {
+          Alert.alert('Error', 'File could not be saved');
+          return;
+        }
+  
+        await FileViewer.open(localFilePath, { showOpenWithDialog: true });
+      } catch (error) {
+        console.error('File Open Error:', error);
+        Alert.alert('Error', 'Unable to open the file.');
+      }
+    };
+  
 
   return (
     <View style={styles.container}>
@@ -76,10 +80,10 @@ const AdminChat = ({ route, navigation }) => {
             <View style={styles.taskItem}>
               <Text style={styles.taskTitle}>{item.message}</Text>
 
-              {item.file_name ? (
-                <TouchableOpacity onPress={() => openFile(item.file_data, item.file_name, item.file_type)}>
-                  <Text style={styles.fileLink}>📂 {item.file_name}</Text>
-                </TouchableOpacity>
+              {item.fileData ? (
+              <TouchableOpacity onPress={() => openFile(item.fileData, item.fileName, item.fileType)}>
+              <Text style={styles.fileLink}>📂 Open File</Text>
+              </TouchableOpacity>
               ) : (
                 <Text style={styles.noFile}>No file available</Text>
               )}

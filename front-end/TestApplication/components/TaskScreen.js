@@ -6,7 +6,7 @@ import axios from 'axios';
 import { readFile } from 'react-native-fs'; // To read file and encode it to base64
 
 const TaskScreen = ({ route, navigation }) => {
-  const { staffName,StaffId } = route.params;
+  const { staffName,staffId } = route.params;
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [file, setFile] = useState(null);
@@ -46,61 +46,58 @@ const TaskScreen = ({ route, navigation }) => {
     }
   };
 
-  // 📤 Handle Form Submission
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-  
-    if (!taskTitle || !taskDescription) {
-      Alert.alert("Error", "Both title and description are required.");
-      return;
-    }
-  
-    if (!token) {
-      Alert.alert("Error", "Authentication token is missing.");
-      return;
-    }
-  
-    try {
+ // 📤 Handle Form Submission
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  if (!taskTitle || !taskDescription) {
+    Alert.alert("Error", "Both title and description are required.");
+    return;
+  }
+
+  if (!token) {
+    Alert.alert("Error", "Authentication token is missing.");
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
     
-      const formData = new FormData();
-      formData.append("file", file);
-        formData.append(
-        "task",
-        new Blob(
-          [
-            JSON.stringify({
-              title: taskTitle,
-              description: taskDescription,
-              staffId:StaffId,
-            }),
-          ],
-          { type: "application/json" }
-        )
-      );
-  
-      // Send request
-      const response = await axios.post(
-        "http://10.0.2.2:8083/admin/addTask",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      if (response.status === 200) {
-        Alert.alert("Success", "Task added successfully!");
-        navigation.goBack();
-      } else {
-        Alert.alert("Error", "Failed to add task.");
+    // Append the task as a JSON string directly
+    formData.append(
+      "task", 
+      JSON.stringify({
+        title: taskTitle,
+        description: taskDescription,
+        staffId: staffId,
+      })
+    );
+
+    // Send request
+    const response = await axios.post(
+      "http://192.168.4.171:8083/admin/addTask",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (error) {
-      console.error("Error adding task:", error);
-      Alert.alert("Error", "Network error occurred. Please try again.");
+    );
+
+    if (response.status === 200) {
+      Alert.alert("Success", "Task added successfully!");
+      navigation.goBack();
+    } else {
+      Alert.alert("Error", "Failed to add task.");
     }
-  };
+  } catch (error) {
+    console.error("Error adding task:", error);
+    Alert.alert("Error", "Network error occurred. Please try again.");
+  }
+};
+
   
 
   return (

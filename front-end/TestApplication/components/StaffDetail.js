@@ -24,7 +24,7 @@ const StaffDetail = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://10.0.2.2:8083/staff/getTasks/${staffId}`, {
+      const response = await fetch(`http://192.168.4.171:8083/staff/getTasks/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -48,29 +48,24 @@ const StaffDetail = ({ route, navigation }) => {
       {loading ? (
         <ActivityIndicator size="large" color="#007bff" />
       ) : (
-        <FlatList
-          data={tasks}
-          keyExtractor={(item) => item.id.toString()}
-          ListHeaderComponent={() => (
-            <View style={styles.staffInfoContainer}>
-              <Text style={styles.staffName}>{staffName}</Text>
-              <Text style={styles.staffId}>ID: {staffId}</Text>
-            </View>
-          )}
-          renderItem={({ item }) => (
-            <View style={styles.iconContainer}>
-              <TouchableOpacity onPress={() => navigation.navigate('StaffChat',{staffId,staffName})}>
-                <Icon name="message" size={100} color="#007bff" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('StaffUi',{staffId})}>
-                <Icon name="visibility" size={100} color="#28a745" />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
+        <>
+          <View style={styles.staffInfoContainer}>
+            <Text style={styles.staffName}>{staffName}</Text>
+            <Text style={styles.staffId}>ID: {staffId}</Text>
+          </View>
+  
+          <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate('StaffChat', { staffId, staffName })}>
+              <Icon name="message" size={100} color="#007bff" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('StaffUi', { staffId })}>
+              <Icon name="visibility" size={100} color="#28a745" />
+            </TouchableOpacity>
+          </View>
+        </>
       )}
     </View>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({

@@ -51,7 +51,7 @@ const RegistrationScreen = ({ navigation }) => {
       password: password,
     };
   
-    fetch('http://10.0.2.2:8083/admin/createStaff', {
+    fetch('http://192.168.4.171:8083/admin/createStaff', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -22,7 +22,7 @@ const AdminViewTask = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://10.0.2.2:8083/admin/getTasks/${staffId}`, {
+      const response = await fetch(`http://192.168.4.171:8083/admin/getTasks/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -74,10 +74,10 @@ const AdminViewTask = ({ route, navigation }) => {
       <Text style={styles.taskTitle}>{item.title}</Text>
       <Text style={styles.taskDescription}>{item.description}</Text>
 
-      {item.file_name ? (
-        <TouchableOpacity onPress={() => openFile(item.file_data, item.file_name, item.file_type)}>
-          <Text style={styles.fileLink}>📂 {item.file_name}</Text>
-        </TouchableOpacity>
+       {item.fileData ? (
+      <TouchableOpacity onPress={() => openFile(item.fileData, item.fileName, item.fileType)}>
+      <Text style={styles.fileLink}>📂 Open File</Text>
+      </TouchableOpacity>
       ) : (
         <Text style={styles.noFile}>No file available</Text>
       )}

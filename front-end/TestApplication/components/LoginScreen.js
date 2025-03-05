@@ -7,32 +7,34 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
-    setLoading(true);
     try {
-      console.log('Sending request to API...');
-      const response = await fetch('http://192.168.x.x:8083/login', {  // Use your actual IP
+      const response = await fetch('http://192.168.4.171:8083/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
   
-      console.log('Received response:', response);
-      const data = await response.json();  // Parse JSON directly
-      console.log('Parsed response:', data);
+      const data = await response.json();
   
       if (response.ok) {
+        console.log("Login successful:", data);
+        // Store token (optional)
         await AsyncStorage.setItem('authToken', data.token);
-        // Continue with navigation logic...
+  
+        // Navigate based on role
+        if (data.role === "ADMIN") {
+          navigation.navigate("Home");
+        } else if (data.role === "STAFF") {
+          navigation.navigate("StaffDetail",{staffId :data.staffId,staffName:data.staffName});
+        }
       } else {
-        throw new Error(data.error || 'Invalid credentials');
+        console.error("Login failed:", data.message);
       }
     } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Error', error.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
+      console.error("Error logging in:", error);
     }
   };
+  
   
   
   return (

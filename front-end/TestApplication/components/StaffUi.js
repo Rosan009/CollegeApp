@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOp
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
-import moment from 'moment'; // Import moment.js for date formatting
+import moment from 'moment'; 
 
 const StaffUi = ({ route, navigation }) => {
   const { staffId } = route.params;
@@ -23,7 +23,7 @@ const StaffUi = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://10.0.2.2:8083/staff/getTasks/${staffId}`, {
+      const response = await fetch(`http://192.168.4.171:8083/staff/getTasks/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });

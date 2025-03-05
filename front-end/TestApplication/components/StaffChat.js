@@ -74,7 +74,7 @@ export const StaffChat = ({ route }) => {
         type: 'application/json',
       });
 
-      const response = await axios.post('http://10.0.2.2:8083/staff/sendMessage', formData, {
+      const response = await axios.post('http://192.168.4.171:8083/staff/sendMessage', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,

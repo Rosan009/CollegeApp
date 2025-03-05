@@ -19,7 +19,7 @@ const StaffListScreen = ({ navigation }) => {
       }
 
       // Fetch staff list data from backend
-      const response = await axios.get('http://10.0.2.2:8083/admin/get', {
+      const response = await axios.get('http://192.168.4.171:8083/admin/get', {
         headers: {
           'Authorization': `Bearer ${token}`, 
         },
