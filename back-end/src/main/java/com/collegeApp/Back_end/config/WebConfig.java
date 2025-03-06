@@ -12,10 +12,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:19006", // Metro Bundler
                         "http://10.0.2.2:8081",   // Emulator
-                        "http://192.168.1.5:8081", // React Native Server
-                        "http://192.168.1.5:8083"  // Spring Boot API
-                        ,"https://abcd1234.ngrok.io"
+                        "http://192.168.1.5:8081",
+                        "http://192.168.1.5:8083",
+                        "https://abcd1234.ngrok.io",
+                        "http://192.168.4.171:8083"
                 )
+
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);

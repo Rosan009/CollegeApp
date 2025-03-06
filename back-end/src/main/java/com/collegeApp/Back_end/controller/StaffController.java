@@ -1,5 +1,6 @@
 package com.collegeApp.back_end.controller;
 
+import com.collegeApp.Back_end.model.TaskSubmission;
 import com.collegeApp.back_end.model.StaffMessage;
 import com.collegeApp.back_end.model.Task;
 import com.collegeApp.back_end.repo.TaskRepository;
@@ -34,7 +35,8 @@ public class StaffController {
 
     @GetMapping("/getTasks/{staffId}")
     public ResponseEntity<List<Task>> getTasks(@PathVariable String staffId) {
-        return ResponseEntity.ok(staffService.getTasksByStaffId(staffId));
+        List<Task> tasks = staffService.getTasksByStaffId(staffId);
+        return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/downloadFile/{fileName}")
@@ -60,6 +62,23 @@ public class StaffController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error adding task: " + e.getMessage());
+        }
+    }
+    @PostMapping("/submitTask")
+    @PreAuthorize("hasRole('STAFF')")
+    public ResponseEntity<String> submitTask(
+            @RequestPart("task") String taskJson,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        try {
+            TaskSubmission task = objectMapper.readValue(taskJson, TaskSubmission.class);
+            System.out.println("received task:"+task);
+            staffService.submitTask(task, file);
+
+            return ResponseEntity.ok("Task submitted successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error submitting task: " + e.getMessage());
         }
     }
 

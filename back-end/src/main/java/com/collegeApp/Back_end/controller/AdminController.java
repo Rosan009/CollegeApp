@@ -6,6 +6,7 @@ import com.collegeApp.back_end.repo.StaffMessageRepo;
 import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.repo.UserRepo;
 import com.collegeApp.back_end.service.AdminService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -68,17 +69,34 @@ public class AdminController {
 
     @PostMapping("/addTask")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> addTask(
-            @RequestPart("task") String taskJson,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+    public ResponseEntity<?> addTask(@RequestPart String task, @RequestPart MultipartFile file) {
         try {
-            Task task = objectMapper.readValue(taskJson, Task.class);
-            adminService.saveTask(task, file);
+            // Parse the task JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode taskNode = objectMapper.readTree(task);
+
+            // Extract fields
+            String title = taskNode.get("title").asText();
+            String description = taskNode.get("description").asText();
+            String staffId = taskNode.get("staffId").asText();
+            String deadlineString = taskNode.get("deadline").asText();
+
+            int daysToAdd = Integer.parseInt(deadlineString); // Parse the deadline as a number
+            LocalDateTime futureDate = LocalDateTime.now().plusDays(daysToAdd); // Add days to current date
+
+            Task newTask = new Task();
+            newTask.setTitle(title);
+            newTask.setDescription(description);
+            newTask.setStaffId(staffId);
+            newTask.setDeadline(futureDate); // Set the calculated future date
+
+             adminService.saveTask(newTask, file);
 
             return ResponseEntity.ok("Task added successfully!");
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid deadline format. Expected a number.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error adding task: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding task: " + e.getMessage());
         }
     }
 

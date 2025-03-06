@@ -5,11 +5,13 @@ import com.collegeApp.back_end.model.User;
 import com.collegeApp.back_end.repo.TaskRepository;
 import com.collegeApp.back_end.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,8 +37,16 @@ public class AdminService {
             task.setFileData(file.getBytes());
         }
 
-        // Save to DB
         taskRepository.save(task);
+    }
+    @Scheduled(fixedRate = 3600000) // Runs every 1 hour (3600000 ms)
+    public void deleteExpiredTasks() {
+        List<Task> expiredTasks = taskRepository.findByDeadlineBefore(LocalDateTime.now());
+
+        if (!expiredTasks.isEmpty()) {
+            taskRepository.deleteAll(expiredTasks);
+            System.out.println("Deleted " + expiredTasks.size() + " expired tasks.");
+        }
     }
 
     public List<Task> getTasksByStaffId(String staffId) {
