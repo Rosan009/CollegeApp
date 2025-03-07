@@ -16,6 +16,7 @@ import AdminChat from './components/AdminChat';
 import AdminViewTask from './components/AdminViewTask';
 import StaffSubmitTask from './components/StaffSubmitTask';
 import SubmitTaskScreen from './components/SubmitTaskScreen';
+import StaffForm from './components/StaffForm';
 
 const Stack = createStackNavigator();
 
@@ -38,7 +39,7 @@ const App = () => {
         <Stack.Screen name="AdminViewTask" component={AdminViewTask} />
         <Stack.Screen name="StaffSubmitTask" component={StaffSubmitTask} />
         <Stack.Screen name="SubmitTaskScreen" component={SubmitTaskScreen} />
-
+        <Stack.Screen name="StaffForm" component={StaffForm} />
       </Stack.Navigator>
     </NavigationContainer>
   );

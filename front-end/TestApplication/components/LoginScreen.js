@@ -37,9 +37,37 @@ const LoginScreen = ({ navigation }) => {
       const data = await response.json();
       await AsyncStorage.setItem("authToken", data.token);
 
-      if (data.role === "ADMIN") {
+      const currentTime = new Date();
+      const hours = currentTime.getHours();
+      const minutes = currentTime.getMinutes();
+
+      const staffFormAccessedToday = await AsyncStorage.getItem("staffFormAccessedToday");
+
+      if (data.role === "STAFF") {
+        if (staffFormAccessedToday) {
+          navigation.navigate("StaffDetail", {
+            staffId: data.staffId,
+            staffName: data.staffName,
+          });
+          return;
+        }
+
+        if (hours === 16 && minutes >= 15 && minutes <= 25) {
+          navigation.navigate("StaffForm", {
+            staffId: data.staffId,
+            staffName: data.staffName,
+          });
+          
+          await AsyncStorage.setItem("staffFormAccessedToday", "true");
+        } else {
+          navigation.navigate("StaffDetail", {
+            staffId: data.staffId,
+            staffName: data.staffName,
+          });
+        }
+      } else if (data.role === "ADMIN") {
         navigation.navigate("Home");
-      } else if (data.role === "STAFF") {
+      } else {
         navigation.navigate("StaffDetail", {
           staffId: data.staffId,
           staffName: data.staffName,
