@@ -16,7 +16,5 @@ public interface TaskRepository extends JpaRepository<Task,Integer> {
 
     Optional<Task> findByFileName(String fileName);
 
-    List<com.collegeApp.back_end.model.Task> findByCreatedAtBefore(LocalDateTime oneHourAgo);
-
     List<Task> findByDeadlineBefore(LocalDateTime now);
 }

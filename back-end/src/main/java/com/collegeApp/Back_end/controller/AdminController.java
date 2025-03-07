@@ -1,5 +1,6 @@
 package com.collegeApp.back_end.controller;
 
+import com.collegeApp.Back_end.model.TaskSubmission;
 import com.collegeApp.back_end.model.StaffMessage;
 import com.collegeApp.back_end.model.Task;
 import com.collegeApp.back_end.repo.StaffMessageRepo;
@@ -103,5 +104,11 @@ public class AdminController {
     @GetMapping("/getTasks/{staffId}")
     public ResponseEntity<List<Task>> getTasks(@PathVariable String staffId) {
         return ResponseEntity.ok(adminService.getTasksByStaffId(staffId));
+    }
+
+    @GetMapping("/getSubmittedTasks/{staffId}")
+    public ResponseEntity<List<TaskSubmission>> getSubmittedTasks(@PathVariable String staffId) {
+        List<TaskSubmission> submittedTasks = adminService.getSubmittedTasksByStaffId(staffId);
+        return ResponseEntity.ok(submittedTasks);
     }
 }

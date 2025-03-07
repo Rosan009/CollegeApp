@@ -72,7 +72,6 @@ public class StaffController {
 
         try {
             TaskSubmission task = objectMapper.readValue(taskJson, TaskSubmission.class);
-            System.out.println("received task:"+task);
             staffService.submitTask(task, file);
 
             return ResponseEntity.ok("Task submitted successfully!");

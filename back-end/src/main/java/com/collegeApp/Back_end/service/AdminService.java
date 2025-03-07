@@ -1,5 +1,7 @@
 package com.collegeApp.back_end.service;
 
+import com.collegeApp.Back_end.model.TaskSubmission;
+import com.collegeApp.Back_end.repo.TaskSubmissionRepository;
 import com.collegeApp.back_end.model.Task;
 import com.collegeApp.back_end.model.User;
 import com.collegeApp.back_end.repo.TaskRepository;
@@ -22,6 +24,9 @@ public class AdminService {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private TaskSubmissionRepository taskSubmissionRepository;
 
     public void addStaff(User user) throws IOException {
         user.setPassword(new BCryptPasswordEncoder(12).encode(user.getPassword()));
@@ -51,5 +56,9 @@ public class AdminService {
 
     public List<Task> getTasksByStaffId(String staffId) {
         return taskRepository.findByStaffId(staffId);
+    }
+
+    public List<TaskSubmission> getSubmittedTasksByStaffId(String staffId) {
+        return  taskSubmissionRepository.findByStaffId(staffId);
     }
 }
