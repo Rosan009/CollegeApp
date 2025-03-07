@@ -1,5 +1,6 @@
 package com.collegeApp.back_end.controller;
 
+import com.collegeApp.Back_end.model.TaskStatus;
 import com.collegeApp.Back_end.model.TaskSubmission;
 import com.collegeApp.back_end.model.StaffMessage;
 import com.collegeApp.back_end.model.Task;
@@ -74,6 +75,18 @@ public class StaffController {
             TaskSubmission task = objectMapper.readValue(taskJson, TaskSubmission.class);
             staffService.submitTask(task, file);
 
+            return ResponseEntity.ok("Task submitted successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error submitting task: " + e.getMessage());
+        }
+    }
+    @PostMapping("/submitTaskStatus")
+    @PreAuthorize("hasRole('STAFF')")
+    public ResponseEntity<String> submitTaskStatus(@RequestBody TaskStatus taskStatus){
+        try {
+
+           staffService.addStatus(taskStatus);
             return ResponseEntity.ok("Task submitted successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

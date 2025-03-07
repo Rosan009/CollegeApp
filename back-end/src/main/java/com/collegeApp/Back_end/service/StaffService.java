@@ -1,6 +1,8 @@
 package com.collegeApp.back_end.service;
 
+import com.collegeApp.Back_end.model.TaskStatus;
 import com.collegeApp.Back_end.model.TaskSubmission;
+import com.collegeApp.Back_end.repo.TaskStatusRepo;
 import com.collegeApp.Back_end.repo.TaskSubmissionRepository;
 import com.collegeApp.back_end.model.StaffMessage;
 import com.collegeApp.back_end.model.Task;
@@ -26,6 +28,9 @@ public class StaffService {
 
     @Autowired
     private TaskSubmissionRepository taskSubmissionRepository;
+
+    @Autowired
+    private TaskStatusRepo taskStatusRepo;
 
     public void submitTask(TaskSubmission task, MultipartFile file) throws IOException {
         if (file != null && !file.isEmpty()) {
@@ -53,6 +58,10 @@ public class StaffService {
             task.setFileData(file.getBytes());
         }
         staffMessageRepo.save(task);
+    }
+
+    public void addStatus(TaskStatus taskStatus) {
+        taskStatusRepo.save(taskStatus);
     }
 }
 

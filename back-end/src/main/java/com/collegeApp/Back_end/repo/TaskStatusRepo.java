@@ -1,4 +1,7 @@
 package com.collegeApp.Back_end.repo;
 
-public class TaskStatusRepo {
+import com.collegeApp.Back_end.model.TaskStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TaskStatusRepo extends JpaRepository<TaskStatus,Integer> {
 }
