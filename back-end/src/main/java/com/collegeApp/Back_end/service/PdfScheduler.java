@@ -21,7 +21,7 @@ public class PdfScheduler {
     private TaskStatusRepo taskRepository;
 
     // Change cron expression to trigger at 4:26 PM every day
-    @Scheduled(cron = "0 30 16 * * ?")
+    @Scheduled(cron = "0 26 16 * * ?")
     public void generateAndSavePDF() {
         // Delete old PDFs before generating a new one
         deleteOldPDFs();
@@ -41,13 +41,11 @@ public class PdfScheduler {
             PdfWriter.getInstance(document, new FileOutputStream(filePath));
             document.open();
 
-            // Format current date for display in the PDF
             String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
             Font contentFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
 
-            // Add current date at the top of the document
             Paragraph title = new Paragraph("Task Report - Date: " + currentDate + " - 4:30 PM\n\n", titleFont);
             document.add(title);
 
@@ -75,7 +73,6 @@ public class PdfScheduler {
             File[] files = directory.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    // Check if the file is a PDF and is older than 12 hours
                     if (file.getName().endsWith(".pdf") && isFileOlderThan12Hours(file)) {
                         boolean deleted = file.delete();
                         if (deleted) {
