@@ -15,7 +15,6 @@ const HomeScreen = ({ navigation }) =>
   const openFile = async () => {
     setLoading(true);
     try {
-      // Retrieve token from AsyncStorage
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
         Alert.alert('Error', 'You are not authenticated. Please log in.');
@@ -26,14 +25,12 @@ const HomeScreen = ({ navigation }) =>
       const currentHour = currentTime.getHours();
       const currentMinute = currentTime.getMinutes();
 
-    // Check if the time is after 4:26 PM
     if (currentHour < 16 || (currentHour === 16 && currentMinute < 26)) {
       Alert.alert('Error', 'The report can only be viewed after 4:26 PM.');
       setLoading(false);
       return;
     }
 
-      // Fetch report from the backend
       const response = await axios.get('http://192.168.4.171:8083/admin/report', {
         headers: {
           Authorization: `Bearer ${token}`,
