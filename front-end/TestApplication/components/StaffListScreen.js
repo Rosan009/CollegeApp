@@ -8,7 +8,6 @@ const StaffListScreen = ({ navigation }) => {
   const [staffData, setStaffData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch staff data from backend
   const fetchData = async () => {
     try {
       const token = await AsyncStorage.getItem('authToken');
@@ -18,7 +17,6 @@ const StaffListScreen = ({ navigation }) => {
         return;
       }
 
-      // Fetch staff list data from backend
       const response = await axios.get('http://192.168.4.171:8083/admin/get', {
         headers: {
           'Authorization': `Bearer ${token}`, 
@@ -65,7 +63,6 @@ const StaffListScreen = ({ navigation }) => {
         <Icon name="user" size={30} color="#4CAF50" />
         <View style={styles.staffInfo}>
           <Text style={styles.staffName}>{item.name}</Text>
-          <Text style={styles.staffUsername}>{item.username}</Text>
           <Text style={styles.staffId}>{item.staffId}</Text>
         </View>
         <View style={styles.iconContainer}>
@@ -124,6 +121,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginLeft: 10,
+    color:'black'
   },
   staffBox: {
     flexDirection: 'row',

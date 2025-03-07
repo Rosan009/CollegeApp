@@ -40,13 +40,11 @@ const TaskListScreen = ({ navigation }) => {
   };
 
   const navigateToTask = (staffId, staffName) => {
-    navigation.navigate('Task', { staffId, staffName});
+    navigation.navigate('Task', { staffId, staffName });
   };
 
-
-  const addTask = (task) => {
-    setTasks([...tasks, task]);
-    Alert.alert('Success', 'Task added successfully!');
+  const navigateToSubmissionPage = (staffId, staffName) => {
+    navigation.navigate('SubmitTaskScreen', { staffId, staffName });
   };
 
   const renderItem = ({ item }) => (
@@ -58,8 +56,11 @@ const TaskListScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigateToTask(item.staffId, item.name)}>
           <Icon name="plus" size={24} color="#007BFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() =>navigation.navigate("AdminViewTask",{staffId:item.staffId})}>
+        <TouchableOpacity onPress={() => navigation.navigate("AdminViewTask", { staffId: item.staffId })}>
           <Icon name="eye" size={24} color="#28A745" style={styles.iconMargin} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigateToSubmissionPage(item.staffId, item.name)}>
+          <Icon name="file-text" size={24} color="#FF6347" style={styles.iconMargin} />
         </TouchableOpacity>
       </View>
     </View>
@@ -73,7 +74,7 @@ const TaskListScreen = ({ navigation }) => {
         <FlatList
           data={staffData.filter(item => item.role !== "ADMIN")}
           renderItem={renderItem}
-          keyExtractor={(item) => <Text>{item.name}</Text>}
+          keyExtractor={(item) => item.staffId.toString()}
         />
       )}
     </View>

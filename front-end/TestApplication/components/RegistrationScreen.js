@@ -101,6 +101,7 @@ const RegistrationScreen = ({ navigation }) => {
         placeholder="Name"
         value={name}
         onChangeText={(text) => setName(text)}
+        placeholderTextColor="#888" 
       />
       <TextInput
         style={styles.input}
@@ -109,6 +110,7 @@ const RegistrationScreen = ({ navigation }) => {
         onChangeText={(text) => setUserName(text)}
         keyboardType="email-address"
         autoCapitalize="none"
+        placeholderTextColor="#888" 
       />
       <TextInput
         style={styles.input}
@@ -117,12 +119,14 @@ const RegistrationScreen = ({ navigation }) => {
         onChangeText={(text) => setPhoneNumber(text)}
         keyboardType="phone-pad"
         maxLength={10}
+        placeholderTextColor="#888" 
       />
       <TextInput
         style={styles.input}
         placeholder="Staff ID"
         value={staffId}
         onChangeText={(text) => setStaffId(text)}
+        placeholderTextColor="#888" 
       />
       <TextInput
         style={styles.input}
@@ -130,6 +134,7 @@ const RegistrationScreen = ({ navigation }) => {
         value={password}
         onChangeText={(text) => setPassword(text)}
         secureTextEntry
+        placeholderTextColor="#888" 
       />
       <Button title="Register" onPress={handleRegister} />
     </View>
@@ -147,6 +152,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     textAlign: 'center',
+    color:'black'
   },
   input: {
     height: 40,

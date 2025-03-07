@@ -6,7 +6,7 @@ import DocumentPicker from 'react-native-document-picker';
 import axios from 'axios';
 
 export const StaffChat = ({ route }) => {
-  const { staffId } = route.params;
+  const { staffId,staffName } = route.params;
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
   const [token, setToken] = useState('');
@@ -96,13 +96,14 @@ export const StaffChat = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Staff Chat</Text>
+      <Text style={styles.title}>{staffName} Chat</Text>
 
       <TextInput
         style={styles.input}
         value={message}
         onChangeText={setMessage}
         placeholder="Type your message..."
+        placeholderTextColor="#888" 
         multiline
       />
 
@@ -128,6 +129,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color:'black'
   },
   input: {
     width: '100%',
