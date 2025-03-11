@@ -26,14 +26,13 @@ const TaskScreen = ({ route, navigation }) => {
     fetchToken();
   }, []);
 
-  // 📂 Handle File Selection
   const handleFileUpload = async () => {
     try {
       const result = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf, DocumentPicker.types.xls, DocumentPicker.types.xlsx, DocumentPicker.types.ppt, DocumentPicker.types.pptx, DocumentPicker.types.doc, DocumentPicker.types.docx],
       });
 
-      setFile(result[0]); // Save selected file
+      setFile(result[0]); 
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         console.log('User canceled file picker');

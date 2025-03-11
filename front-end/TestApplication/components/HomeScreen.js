@@ -53,7 +53,6 @@ const HomeScreen = ({ navigation }) =>
       setFileName(fileName);
       setFileType(fileType);
 
-      // Write the file data to a local file
       const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
       await RNFS.writeFile(localFilePath, fileData, 'base64');
 
@@ -63,7 +62,6 @@ const HomeScreen = ({ navigation }) =>
         return;
       }
 
-      // Open the file
       await FileViewer.open(localFilePath, { showOpenWithDialog: true });
     } catch (error) {
       console.error('Error fetching or opening file:', error);
