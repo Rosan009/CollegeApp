@@ -47,7 +47,7 @@ const TaskScreen = ({ route, navigation }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!taskTitle || !taskDescription || deadline) {
+    if (!taskTitle || !taskDescription || !deadline) {
       Alert.alert("Error", "all feild are required.");
       return;
     }
