@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -75,8 +74,8 @@ public class AdminController {
             String staffId = taskNode.get("staffId").asText();
             String deadlineString = taskNode.get("deadline").asText();
 
-            int daysToAdd = Integer.parseInt(deadlineString); // Parse the deadline as a number
-            LocalDateTime futureDate = LocalDateTime.now().plusDays(daysToAdd); // Add days to current date
+            int daysToAdd = Integer.parseInt(deadlineString);
+            LocalDateTime futureDate = LocalDateTime.now().plusDays(daysToAdd);
 
             Task newTask = new Task();
             newTask.setTitle(title);
@@ -108,7 +107,6 @@ public class AdminController {
     @GetMapping("/report")
     public ResponseEntity<Map<String, Object>> getReport() {
         try {
-            // Use the full path to the reports folder
             File reportDir = new File("D:/Documents/CollegeApp/back-end/src/main/resources/reports");
 
             if (!reportDir.exists() || !reportDir.isDirectory()) {

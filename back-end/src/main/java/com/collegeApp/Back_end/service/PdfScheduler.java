@@ -20,10 +20,8 @@ public class PdfScheduler {
     @Autowired
     private TaskStatusRepo taskRepository;
 
-    // Change cron expression to trigger at 4:26 PM every day
     @Scheduled(cron = "0 26 16 * * ?")
     public void generateAndSavePDF() {
-        // Delete old PDFs before generating a new one
         deleteOldPDFs();
 
         List<TaskStatus> tasks = taskRepository.findAll();

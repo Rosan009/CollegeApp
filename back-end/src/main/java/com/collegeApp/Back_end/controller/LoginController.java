@@ -42,7 +42,7 @@ public class LoginController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             User dbUser = userRepo.findByUsername(user.getUsername()).orElseThrow();
 
-            String normalizedRole = dbUser.getRole().replace("ROLE_", ""); // Remove "ROLE_"
+            String normalizedRole = dbUser.getRole().replace("ROLE_", "");
 
             String token = jwtTokenProvider.generateToken(user.getUsername(), normalizedRole);
 
@@ -51,8 +51,6 @@ public class LoginController {
                     "username", userDetails.getUsername(),
                     "role", normalizedRole,
                     "token", token
-//                    "staffName", user.getName(),
-//                    "staffId", user.getStaffId()
             ));
             if ("STAFF".equals(normalizedRole)) {
                 response.put("staffId", dbUser.getStaffId());
