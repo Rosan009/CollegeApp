@@ -8,9 +8,8 @@ const RegistrationScreen = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [staffId, setStaffId] = useState('');
   const [password, setPassword] = useState('');
-  const [token, setToken] = useState(null);  // Token state to store the retrieved token
+  const [token, setToken] = useState(null);  
 
-  // Retrieve the token on component mount
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -23,7 +22,7 @@ const RegistrationScreen = ({ navigation }) => {
     };
     
     fetchToken();
-  }, []);  // Empty dependency array to run once when the component mounts
+  }, []); 
 
   const handleRegister = () => {
     if (!name || !userName || !phoneNumber || !staffId || !password) {
@@ -62,14 +61,13 @@ const RegistrationScreen = ({ navigation }) => {
       .then((response) => {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
-          return response.json(); // If JSON, parse it as JSON
+          return response.json(); 
         }
-        return response.text(); // Otherwise, handle it as plain text
+        return response.text(); 
       })
       .then((data) => {
         if (typeof data === 'string') {
           console.log('Raw Text Response:', data);
-          // Handle the success message in plain text
           if (data.includes("Successfully registered")) {
             Alert.alert('Success', 'Staff Registration Successful!');
             navigation.navigate('StaffList');
@@ -77,7 +75,6 @@ const RegistrationScreen = ({ navigation }) => {
             Alert.alert('Error', 'Registration failed.');
           }
         } else {
-          // Handle the JSON response
           if (data.success) {
             Alert.alert('Success', 'Staff Registration Successful!');
             navigation.navigate('StaffList');

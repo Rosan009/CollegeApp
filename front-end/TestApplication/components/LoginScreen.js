@@ -29,11 +29,6 @@ const LoginScreen = ({ navigation }) => {
         body: JSON.stringify({ username, password }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
-      }
-
       const data = await response.json();
       await AsyncStorage.setItem("authToken", data.token);
 
