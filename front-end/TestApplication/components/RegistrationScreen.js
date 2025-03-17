@@ -50,7 +50,7 @@ const RegistrationScreen = ({ navigation }) => {
       password: password,
     };
   
-    fetch('http://192.168.4.171:8083/admin/createStaff', {
+    fetch('http://192.168.102.76:8083/admin/createStaff', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 10,
+    color:"black"
   },
 });
 

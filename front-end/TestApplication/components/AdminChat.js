@@ -22,7 +22,7 @@ const AdminChat = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://192.168.4.171:8083/admin/getMessage/${staffId}`, {
+      const response = await fetch(`http://192.168.102.76:8083/admin/getMessage/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });

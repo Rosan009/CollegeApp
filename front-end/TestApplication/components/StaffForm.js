@@ -23,7 +23,7 @@ const StaffForm = ({ route, navigation }) => {
 
     const fetchTaskDetails = async (token) => {
       try {
-        const response = await axios.get(`http://192.168.4.171:8083/staff/getTasks/${staffId}`, {
+        const response = await axios.get(`http://192.168.102.76:8083/staff/getTasks/${staffId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,7 +49,6 @@ const StaffForm = ({ route, navigation }) => {
       [taskId]: text,
     });
 
-    // Clear the error for the current task if status is being typed
     setErrors({
       ...errors,
       [taskId]: "",
@@ -91,7 +90,7 @@ const StaffForm = ({ route, navigation }) => {
 
         if (task) {
           await axios.post(
-            "http://192.168.4.171:8083/staff/submitTaskStatus",
+            "http://192.168.102.76:8083/staff/submitTaskStatus",
             {
               staffId, 
               staffName,

@@ -17,7 +17,7 @@ const StaffListScreen = ({ navigation }) => {
         return;
       }
 
-      const response = await axios.get('http://192.168.4.171:8083/admin/get', {
+      const response = await axios.get('http://192.168.102.76:8083/admin/get', {
         headers: {
           'Authorization': `Bearer ${token}`, 
         },

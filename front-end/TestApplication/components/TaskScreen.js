@@ -72,7 +72,7 @@ const TaskScreen = ({ route, navigation }) => {
 
       // Send request
       const response = await axios.post(
-        "http://192.168.4.171:8083/admin/addTask",
+        "http://192.168.102.76:8083/admin/addTask",
         formData,
         {
           headers: {

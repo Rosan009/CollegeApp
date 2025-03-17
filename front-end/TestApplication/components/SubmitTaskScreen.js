@@ -24,7 +24,7 @@ const SubmitTaskScreen = ({ route }) => {
         return;
       }
 
-      const response = await fetch(`http://192.168.4.171:8083/admin/getSubmittedTasks/${staffId}`, {
+      const response = await fetch(`http://192.168.102.76:8083/admin/getSubmittedTasks/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -31,7 +31,7 @@ const HomeScreen = ({ navigation }) =>
       return;
     }
 
-      const response = await axios.get('http://192.168.4.171:8083/admin/report', {
+      const response = await axios.get('http://192.168.102.76:8083/admin/report', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

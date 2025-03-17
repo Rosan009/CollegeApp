@@ -26,7 +26,7 @@ const StaffUi = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://192.168.4.171:8083/staff/getTasks/${staffId}`, {
+      const response = await fetch(`http://192.168.102.76:8083/staff/getTasks/${staffId}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });

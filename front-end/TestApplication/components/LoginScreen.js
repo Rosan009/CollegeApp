@@ -20,49 +20,60 @@ const LoginScreen = ({ navigation }) => {
       alert("Please enter both username and password");
       return;
     }
-
+  
     setLoading(true);
     try {
-      const response = await fetch("http://192.168.4.171:8083/login", {
+      const response = await fetch("http://192.168.102.76:8083/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
       await AsyncStorage.setItem("authToken", data.token);
-
+  
       const currentTime = new Date();
       const hours = currentTime.getHours();
       const minutes = currentTime.getMinutes();
-
+  
+      console.log(`Current Time: ${hours}:${minutes}`); // Log the current time for debugging
+  
       const staffFormAccessedToday = await AsyncStorage.getItem("staffFormAccessedToday");
+      console.log(`staffFormAccessedToday: ${staffFormAccessedToday}`); // Log this value
+      await AsyncStorage.removeItem("staffFormAccessedToday");
 
+  
       if (data.role === "STAFF") {
         if (staffFormAccessedToday) {
+          console.log("Navigating to StaffDetail as form was already accessed today.");
           navigation.navigate("StaffDetail", {
             staffId: data.staffId,
             staffName: data.staffName,
           });
           return;
         }
-
-        if (hours === 16 && minutes >= 15 && minutes <= 25) {
+  
+        if (hours === 20 && minutes >= 0 && minutes <= 55) {
+          console.log("Navigating to StaffForm (within the allowed time).");
           navigation.navigate("StaffForm", {
-            staffId: data.staffId,
+            staffId: data
+            .staffId,
             staffName: data.staffName,
           });
           
           await AsyncStorage.setItem("staffFormAccessedToday", "true");
         } else {
+          console.log("Navigating to StaffDetail (outside the allowed time).");
           navigation.navigate("StaffDetail", {
             staffId: data.staffId,
             staffName: data.staffName,
           });
         }
       } else if (data.role === "ADMIN") {
+        console.log("Navigating to Home (Admin Login).");
         navigation.navigate("Home");
       } else {
+        console.log("Navigating to StaffDetail (Default case).");
         navigation.navigate("StaffDetail", {
           staffId: data.staffId,
           staffName: data.staffName,
@@ -75,6 +86,7 @@ const LoginScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <View style={styles.container}>
