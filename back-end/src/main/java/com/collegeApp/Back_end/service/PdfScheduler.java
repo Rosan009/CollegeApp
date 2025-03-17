@@ -20,7 +20,7 @@ public class PdfScheduler {
     @Autowired
     private TaskStatusRepo taskRepository;
 
-    @Scheduled(cron = "0 26 16 * * ?")
+    @Scheduled(cron = "0 28 20 * * ?")
     public void generateAndSavePDF() {
         deleteOldPDFs();
 
