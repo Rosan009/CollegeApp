@@ -19,14 +19,14 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
+@Configurationgit
 public class SecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private JwtFilter jwtFilter;
+    private com.collegeApp.back_end.config.JwtFilter jwtFilter;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
