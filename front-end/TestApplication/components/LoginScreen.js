@@ -90,7 +90,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../components/img/psna.jpg")} style={styles.logo} />
+      <Image source={require("../components/img/WhatsApp Image 2025-04-16 at 09.47.48_124dd629.jpg")} style={styles.logo} />
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
